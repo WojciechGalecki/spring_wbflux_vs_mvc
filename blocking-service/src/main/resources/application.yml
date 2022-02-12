@@ -1,0 +1,7 @@
+external-service:
+  url: https://jsonplaceholder.typicode.com
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:pwd@localhost:27017/demo

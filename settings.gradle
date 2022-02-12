@@ -2,3 +2,4 @@ rootProject.name = 'demo'
 
 include 'reactive-service'
 include 'blocking-service'
+include 'models'
