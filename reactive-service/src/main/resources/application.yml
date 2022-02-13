@@ -1,5 +1,5 @@
 external-service:
-  url: https://jsonplaceholder.typicode.com
+  url: http://jsonplaceholder.typicode.com
 
 spring:
   data:
