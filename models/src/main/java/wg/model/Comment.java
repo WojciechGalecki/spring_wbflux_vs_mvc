@@ -1,3 +1,4 @@
 package wg.model;
 
-public record Comment(int postId, int id, String name, String email, String body) {}
+public record Comment(Integer id, Integer postId, String name, String email, String body) {
+}

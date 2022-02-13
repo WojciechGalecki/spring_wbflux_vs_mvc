@@ -4,4 +4,4 @@ external-service:
 spring:
   data:
     mongodb:
-      uri: mongodb://root:pwd@localhost:27017/demo
+      uri: mongodb://user:pwd@localhost:27017/demo?authSource=admin
