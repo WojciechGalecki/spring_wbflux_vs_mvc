@@ -1,12 +1,16 @@
 package wg.reactive;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.reactivestreams.Subscription;
 
+import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 import wg.reactive.exception.CustomException;
 
@@ -110,5 +114,34 @@ public class ReactiveExamplesTest {
             .create(publisher)
             .expectNextCount(400) // 't' 'e' 's' 't' (4) * 100
             .verifyComplete();
+    }
+
+    @Test
+    public void onBackPressure() {
+        Flux<Integer> publisher = Flux.range(1, 100).log();
+
+        List<Integer> list = new ArrayList<>();
+
+        publisher
+            //.onBackpressureDrop(i -> System.out.println("Dropped: " + i))
+            //.onBackpressureBuffer(10, i -> System.out.println("BUFFERED: " + i))
+            //.onBackpressureDrop(list::add)
+            .onBackpressureBuffer(1, list::add)
+            .subscribe(new BaseSubscriber<>() {
+            @Override
+            protected void hookOnSubscribe(Subscription subscription) {
+                request(3);
+            }
+
+            @Override
+            protected void hookOnNext(Integer value) {
+                System.out.println("next " + value);
+            }
+        });
+
+        Flux.fromIterable(list)
+            .log()
+            .subscribeOn(Schedulers.newSingle("NEW-SINGLE"))
+            .subscribe();
     }
 }

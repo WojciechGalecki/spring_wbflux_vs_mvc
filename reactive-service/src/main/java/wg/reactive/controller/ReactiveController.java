@@ -1,5 +1,8 @@
 package wg.reactive.controller;
 
+import java.time.Duration;
+import java.util.stream.Stream;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,5 +43,16 @@ public class ReactiveController {
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> getStream() {
         return service.getInfiniteStream();
+    }
+
+    @GetMapping(value = "/stream/zip", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Integer> merge() {
+        Flux<Integer> p1 = Flux.fromStream(Stream.generate(() -> 1));
+        Flux<Integer> p2 = Flux.fromStream(Stream.generate(() -> 2));
+
+        return p1.zipWith(p2, Integer::sum)
+            .delayElements(Duration.ofMillis(200))
+            //.limitRate(3) // backpressure - constantly request only 3 instead of unbound value
+            .log();
     }
 }
