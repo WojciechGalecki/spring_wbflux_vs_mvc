@@ -30,6 +30,7 @@ public class ReactiveClient {
     }
 
     public Flux<Comment> getComments() {
+        log.info("Fetching comments...");
         return webClient.get()
             .uri("/comments")
             .accept(MediaType.APPLICATION_JSON)

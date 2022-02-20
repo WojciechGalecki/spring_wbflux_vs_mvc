@@ -10,9 +10,11 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.slf4j.Slf4j;
 import wg.model.Comment;
 
 @Component
+@Slf4j
 public class BlockingClient {
 
     private final RestTemplate restTemplate;
@@ -22,6 +24,7 @@ public class BlockingClient {
     }
 
     public List<Comment> getComments() {
+        log.info("Fetching comments...");
         return Arrays.asList(requireNonNull(restTemplate.getForObject("/comments", Comment[].class)));
     }
 }
