@@ -1,0 +1,3 @@
+rsocket-server:
+  host: localhost
+  port: 7000
