@@ -11,3 +11,9 @@ services:
       MONGO_INITDB_DATABASE: demo
     ports:
       - '27017-27019:27017-27019'
+
+  cassandra:
+    image: cassandra
+    restart: always
+    ports:
+      - '9042:9042'

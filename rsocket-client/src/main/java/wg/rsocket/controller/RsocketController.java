@@ -3,33 +3,25 @@ package wg.rsocket.controller;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import wg.model.CommentTable;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/rsocket")
+@Slf4j
 public class RsocketController {
 
     private final RSocketRequester rSocketRequester;
 
-    @GetMapping("/request-response")
-    public Mono<String> requestResponse() {
+    @GetMapping(value = "/rsocket/comments", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<CommentTable> getCommentStreamOverRsocket() {
+        log.info("Fetching comments via RSocket");
         return rSocketRequester
-            .route("requestResponse")
-            .retrieveMono(String.class)
-            .log();
-    }
-
-    @GetMapping(value = "request-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> requestStream() {
-        return rSocketRequester
-            .route("requestStream")
-            .retrieveFlux(String.class)
-            .log();
+            .route("comments")
+            .retrieveFlux(CommentTable.class);
     }
 }

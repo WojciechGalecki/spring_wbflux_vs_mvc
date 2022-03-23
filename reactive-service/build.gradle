@@ -12,6 +12,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 
     implementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE'
+    implementation 'io.projectreactor:reactor-tools:3.4.14'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'

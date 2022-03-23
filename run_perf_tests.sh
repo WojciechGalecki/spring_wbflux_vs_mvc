@@ -1,0 +1,1 @@
+cd test && k6 run performance.js

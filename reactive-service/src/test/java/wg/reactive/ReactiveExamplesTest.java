@@ -3,7 +3,9 @@ package wg.reactive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
+import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Subscription;
 
@@ -32,7 +34,7 @@ public class ReactiveExamplesTest {
         Flux<String> publisher = Flux.range(1, 5)
             .map(Object::toString)
             .doOnSubscribe(subscription -> System.out.println("onSubscribe: subscribed"))
-            .doOnError(error -> System.err.println("onError: " + error)) // sout - IO, blocking call!!!
+            .doOnError(error -> System.err.println("onError: " + error))
             .doOnComplete(() -> System.out.println("onComplete: completed"))
             .log();
 
@@ -127,21 +129,61 @@ public class ReactiveExamplesTest {
             //.onBackpressureBuffer(10, i -> System.out.println("BUFFERED: " + i))
             //.onBackpressureDrop(list::add)
             .onBackpressureBuffer(1, list::add)
+            //.limitRate()
             .subscribe(new BaseSubscriber<>() {
-            @Override
-            protected void hookOnSubscribe(Subscription subscription) {
-                request(3);
-            }
+                @Override
+                protected void hookOnSubscribe(Subscription subscription) {
+                    request(3);
+                    //cancel();
+                }
 
-            @Override
-            protected void hookOnNext(Integer value) {
-                System.out.println("next " + value);
-            }
-        });
+                @Override
+                protected void hookOnNext(Integer value) {
+                    System.out.println("next " + value);
+                }
+            });
 
-        Flux.fromIterable(list)
+        //        Flux.fromIterable(list)
+        //            .log()
+        //            //.subscribeOn(Schedulers.newSingle("NEW-SINGLE"))
+        //            .subscribe();
+    }
+
+    @Test
+    public void migrating3rdPartyServicesToReactive() {
+        Supplier<String> externalBlockingResponse = () -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException();
+            }
+            return RandomString.make();
+        };
+
+        // WRONG - same result 3 times
+        //        Mono.just(externalBlockingResponse.get())
+        //            .repeat(2)
+        //            .log()
+        //            .subscribe();
+
+        // OK
+        Mono.fromCallable(externalBlockingResponse::get)
+            .repeat(2)
             .log()
-            .subscribeOn(Schedulers.newSingle("NEW-SINGLE"))
+            //.subscribeOn(Schedulers.boundedElastic())
+            .subscribe();
+    }
+
+    @Test
+    public void scheduling() {
+        Mono<String> nonBlocking = Mono.just("non-blocking");
+
+        Mono<String> blocking = Mono.just("blocking")
+            .subscribeOn(Schedulers.newParallel("NEW SCHEDULER"));
+
+        nonBlocking
+            .concatWith(blocking)
+            .log()
             .subscribe();
     }
 }

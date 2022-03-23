@@ -8,18 +8,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommentMapper {
 
-    public static CommentEntity toEntity(Comment comment) {
-        CommentEntity commentEntity = new CommentEntity();
-        BeanUtils.copyProperties(comment, commentEntity);
-        return commentEntity;
+//    public static CommentDocument toDocument(Comment comment) {
+//        CommentDocument commentDocument = new CommentDocument();
+//        BeanUtils.copyProperties(comment, commentDocument);
+//        return commentDocument;
+//    }
+//
+//    public static Comment fromDocument(CommentDocument commentDocument) {
+//        return new Comment(
+//            commentDocument.getId(),
+//            commentDocument.getPostId(),
+//            commentDocument.getName(),
+//            commentDocument.getEmail(),
+//            commentDocument.getBody());
+//    }
+
+    public static CommentTable toTable(Comment comment) {
+        CommentTable commentTable = new CommentTable();
+        BeanUtils.copyProperties(comment, commentTable);
+        return commentTable;
     }
 
-    public static Comment fromEntity(CommentEntity commentEntity) {
+    public static Comment fromTable(CommentTable commentTable) {
         return new Comment(
-            commentEntity.getId(),
-            commentEntity.getPostId(),
-            commentEntity.getName(),
-            commentEntity.getEmail(),
-            commentEntity.getBody());
+            commentTable.getId(),
+            commentTable.getPostId(),
+            commentTable.getName(),
+            commentTable.getEmail(),
+            commentTable.getBody());
     }
 }

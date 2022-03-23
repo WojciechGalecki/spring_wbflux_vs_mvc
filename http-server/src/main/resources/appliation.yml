@@ -1,7 +1,4 @@
 spring:
-  rsocket:
-    server:
-      port: 7000
   data:
     cassandra:
       port: 9042

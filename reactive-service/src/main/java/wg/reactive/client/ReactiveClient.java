@@ -49,23 +49,24 @@ public class ReactiveClient {
 
     public Flux<Comment> getCommentsWithRetry() {
         return webClient.get()
-            .uri("/comments")
+            .uri("/wrong-path")
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToFlux(Comment.class)
-            .doOnError(e -> log.error("An error occurred"))
-            .retry(3)
+            .doOnError(e -> log.error("AN ERROR OCCURRED"))
+            .retry(2)
             .log();
     }
 
     public Flux<Comment> getCommentsWithRetryWhen400() {
         return webClient.get()
-            .uri("/comment")
+            .uri("/wrong-path")
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, transformToCustomException())
             .bodyToFlux(Comment.class)
-            .doOnError(e -> log.error("An error occurred"))
+            .doOnError(e -> log.error("AN ERROR OCCURRED"))
+            .timeout(Duration.ofSeconds(5))
             .retryWhen(retrySpecification())
             .log();
     }
@@ -76,7 +77,7 @@ public class ReactiveClient {
 
     private RetryBackoffSpec retrySpecification() {
         return Retry
-            .fixedDelay(3, Duration.ofSeconds(1))
+            .fixedDelay(2, Duration.ofSeconds(1))
             .filter(e -> e instanceof CustomException)
             .doAfterRetry(signal -> log.error(signal.toString()))
             .onRetryExhaustedThrow((spec, signal) -> {

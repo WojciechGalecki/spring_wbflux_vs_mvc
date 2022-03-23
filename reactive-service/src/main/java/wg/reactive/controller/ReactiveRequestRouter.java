@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import wg.model.Comment;
 import wg.reactive.service.ReactiveService;
 
 @Configuration
@@ -21,12 +22,11 @@ public class ReactiveRequestRouter {
 
     @Bean
     RouterFunction<ServerResponse> routes() {
-        return RouterFunctions
-            .route(GET("/route/stream"), handleStream);
+        return RouterFunctions.route(GET("/route/comments"), handleFunction);
     }
 
-    HandlerFunction<ServerResponse> handleStream = (request -> ServerResponse
+    HandlerFunction<ServerResponse> handleFunction = (request -> ServerResponse
         .ok()
-        .contentType(MediaType.TEXT_EVENT_STREAM)
-        .body(service.getInfiniteStream(), String.class));
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(service.getComments(), Comment.class));
 }
